@@ -33,15 +33,11 @@ import java.util.Map;
 
 
 public class SendRequests {
-
     private Context context;
-
     public String url;
     public String returnString;
     public JSONObject returnJson;
-
     private int requestMethod;
-
 
     public SendRequests(Context context, String url, String method) {
         this.context = context;
@@ -51,17 +47,12 @@ public class SendRequests {
         else requestMethod = Request.Method.GET;
     }
 
-
     public void sendRequest(String body_string_get_request)
     {
-
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(this.context);
-
             final String mRequestBody = body_string_get_request;
-
             VolleyLog.wtf(body_string_get_request);
-
 
             StringRequest stringRequest = new StringRequest(requestMethod,
                     url,
@@ -114,8 +105,6 @@ public class SendRequests {
                     return params;
                 }
 
-
-
             };
 
             requestQueue.add(stringRequest);
@@ -123,9 +112,6 @@ public class SendRequests {
             VolleyLog.wtf(e.toString());
         }
     }
-
-
-
 
     @Override
     public int hashCode() {

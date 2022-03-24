@@ -17,8 +17,6 @@ public class WebAppInterface {
     public String experimentid;
     public String userfeedbackData;
 
-
-
     public WebAppInterface(Context context, JSONObject obj, String userid, String experimentid) {
         this.context = context;
         this.input_data = obj;
@@ -32,7 +30,6 @@ public class WebAppInterface {
         return input_data.toString();
 
     }
-
 
     @JavascriptInterface
     public String getExperimentData(){
@@ -50,11 +47,7 @@ public class WebAppInterface {
 
         SendRequests thisreq = new SendRequests(context,"https://gdh6jlmrij.execute-api.ap-southeast-1.amazonaws.com/getUserInputs/res-yak-getuserinfo", "POST");
         thisreq.sendRequest(userFeedbackString);
-
-
     }
-
-
 
     @Override
     public int hashCode() {

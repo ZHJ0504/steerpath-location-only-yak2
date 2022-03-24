@@ -53,8 +53,6 @@ public class DemoApplication extends Application {
     private static LiveOptions liveOptions;
     public static boolean showThisDeviceLive = false;
 
-
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -63,15 +61,15 @@ public class DemoApplication extends Application {
         // It will conveniently filter subsequent calls to onCreate().
 
         // Memory Leaks
-//        if (LeakCanary.isInAnalyzerProcess(this)) {
-//            // This process is dedicated to LeakCanary for heap analysis.
-//            // You should not init your app in this process.
-//            return;
-//        }
+        // if (LeakCanary.isInAnalyzerProcess(this)) {
+        // This process is dedicated to LeakCanary for heap analysis.
+        // You should not init your app in this process.
+        // return;
+        //}
 
         // when setANRListener() is not set, app will crash on ANR
         // TODO: for some reason, ANR is not delivered to Crashlytics id ANRListener is set?
-//        new ANRWatchDog().setReportMainThreadOnly().start();
+        //new ANRWatchDog().setReportMainThreadOnly().start();
 
         // Other badness
         //enableStrictMode();
@@ -130,7 +128,6 @@ public class DemoApplication extends Application {
         SteerpathClient.StartConfig.Builder builder = new SteerpathClient.StartConfig.Builder()
                 .name(setup.getName())
                 .apiKey(setup.getApikey())
-
 
                 // OPTIONAL:
                 // 1. OfflineBundle contains metadata, style, positioning, routing and vector tile data. Makes map features usable with bad
@@ -205,6 +202,7 @@ public class DemoApplication extends Application {
      * If Telemetry needs to be started after {@link SteerpathClient#start(Context, SteerpathClient.StartConfig, SteerpathClient.StartListener)}.
      * Example Scenario: if user id or other property is downloaded from the backend and start of Telemetry must be delayed until response has been received.
      */
+
 //    public static void delayTelemetryStart(Context context) {
 //        new Handler().postDelayed(() ->
 //                TelemetryService.getInstance().start(context.getApplicationContext(), getTelemetryConfig(context)), 5000);

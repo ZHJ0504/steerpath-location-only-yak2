@@ -339,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         locationDataWebView.clearHistory();
                         locationDataHTMLString = "Location stopped <br> Press Change ID to change your id <br> Press start to start location again.";
                         locationDataWebView.loadData(locationDataHTMLString, "text/html", "UTF-8");
-
                     }
                 }
                 else
@@ -362,9 +361,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                     experimentName.setEnabled(true);
                     experimentNumber.setEnabled(true);
-
-
-                } else if (buttonChangeId.getText().equals(getString(R.string.saveId)))
+                }
+                else if (buttonChangeId.getText().equals(getString(R.string.saveId)))
                 {
                     buttonChangeId.setText(R.string.changeId);
                     buttonStartLocation.setEnabled(true);
