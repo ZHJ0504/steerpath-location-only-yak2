@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Yak2</string>
+    <string name="mainappName">YAK 2.0 - beta version</string>
+    <string name="experimentId">Exp. ID </string>
+
+    <string name="startLocation">Start</string>
+    <string name="stopLocation">Stop</string>
+
+    <string name="changeId">Change id</string>
+    <string name="saveId">Save id</string>
+    <string name="ble_not_supported">BLE not supported</string>
+    <string name="waiting_location">Waiting for location data</string>
+    <string name="testString">esk</string>
+    <string name="testStringNum">00</string>
+    <color name="white_bg">#FFFFFF</color>
+</resources>
