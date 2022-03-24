@@ -43,8 +43,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -90,8 +88,6 @@ import java.util.Set;
 import android.provider.Settings.Secure;
 import org.altbeacon.bluetooth.BluetoothMedic;
 
-
-
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     WebView webpage;
@@ -99,21 +95,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private boolean isBluetoothEnabled = false;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
-
     Button buttonStartLocation;
     Button buttonChangeId;
 
     private Intent startIntent2;
 
-//    Button buttonrefreshInfo;
-//    Button buttonEnterFeedback;
-
     EditText experimentName;
     EditText experimentNumber;
     String expNameString ;
     String experimentNumberString = "00";
-
-
 
     String customHTML;
     String testString;
@@ -123,11 +113,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     WebView locationDataWebView;
 
     JSONObject obj_getuserinfo;
-
-//    BluetoothGatt mBluetoothGatt= null;
-
-//    TextView locationData;
-
 
     private ArrayList<Setup> apikeys;
     private DBLoader dbLoader;
@@ -201,11 +186,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 LocalBroadcastManager.getInstance(this).registerReceiver(sdkReadyBroadcastReceiver,
                         new IntentFilter(DemoApplication.BROADCAST_SDK_READY));
 
-
             } catch (Exception ex) {
-
                 try {
-
                     String name_ = "test";
 
                     dbLoader = new DBLoader(this);
@@ -219,13 +201,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     apikeys = dbLoader.loadSetups();
                     currentKey = apikeys.get(0);
 
-
                     experimentName.setText(currentKey.getName());
                     experimentNumber.setText(currentKey.getUser_num());
 
                     full_user_id = currentKey.getName() + currentKey.getUser_num();
                     Toast.makeText(this, full_user_id + " -- 2", Toast.LENGTH_LONG).show();
-
 
                     webpage.clearCache(true);
                     webpage.clearHistory();
@@ -238,17 +218,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     LocalBroadcastManager.getInstance(this).registerReceiver(sdkReadyBroadcastReceiver,
                             new IntentFilter(DemoApplication.BROADCAST_SDK_READY));
 
+                }
+                catch (Exception exxx)
+                {
+                    webpage.clearCache(true);
+                    Log.e("Gella", exxx.toString(),exxx.fillInStackTrace());
 
-                    } catch (Exception exxx)
-                    {
-                        webpage.clearCache(true);
-                        Log.e("Gella", exxx.toString(),exxx.fillInStackTrace());
-
-                        webpage.clearHistory();
-                        locationDataHTMLString +="<span style'color:green'>"+exxx.toString()+"</span></body></html>";
-                        webpage.loadData(locationDataHTMLString, "text/html", "UTF-8");
-                    }
-
+                    webpage.clearHistory();
+                    locationDataHTMLString +="<span style'color:green'>"+exxx.toString()+"</span></body></html>";
+                    webpage.loadData(locationDataHTMLString, "text/html", "UTF-8");
+                }
         }
     }
 
@@ -276,7 +255,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         });
     }
 
@@ -312,36 +290,29 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     expNameString= experimentName.getText().toString();
                     if (buttonStartLocation.getText().equals(getString(R.string.startLocation)) && validateExperimentName(expNameString))
                     {
-
                         buttonStartLocation.setText(R.string.stopLocation);
                         buttonChangeId.setEnabled(false);
                         checkBluetooth();
-                    checkLocationService();
+                        checkLocationService();
 
                         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                             String[] permissions = PermissionUtils.getMissingPermissions(getApplicationContext());
                             if (permissions.length > 0) {
                                 PermissionUtils.requestPermissions(getParent(), permissions, REQUEST_PERMISSIONS);
-
                             } else {
-
-//                            locationData.setText("location should start here ....");
-                                // Ithink this is the default
+                                // I think this is the default (should run location)
                                 try {
                                     Thread.sleep(000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
                                 DemoApplication.USES_DEFAULT_CONFIG = true;
-//                                LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(sdkReadyBroadcastReceiver);
-
                                 startPositioning();
 
                                 startIntent2 = new Intent(MainActivity.this, LocationForegroundService.class);
                                 startIntent2.setAction(Constants.ACTION.START_ACTION);
                                 startService(startIntent2);
                             }
-
 
                         } else {
                             webpage.clearCache(true);
@@ -350,14 +321,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             webpage.loadData(customHTML, "text/html", "UTF-8");
                         }
 
-
-                    } else if  (buttonStartLocation.getText().equals(getString(R.string.stopLocation)))
+                    }
+                    else if  (buttonStartLocation.getText().equals(getString(R.string.stopLocation)))
                     {
                         buttonStartLocation.setText(R.string.startLocation);
                         buttonChangeId.setEnabled(true);
 
                         stopService(startIntent2);
-//                        unregisterReceiver(receiver);
+                        // unregisterReceiver(receiver);
 
                         // When FusedLocationProviderApi has any registered LocationListener on it, positioning engine remains alive.
                         // Meaning it will keep bluetooth scanner alive and will drain battery.
@@ -370,13 +341,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         locationDataWebView.loadData(locationDataHTMLString, "text/html", "UTF-8");
 
                     }
-                }else
+                }
+                else
                 {
                     locationDataWebView.clearCache(true);
                     locationDataWebView.clearHistory();
                     locationDataHTMLString = "Location stopped <br> Press Change ID to change your id <br> Press start to start location again.";
                     locationDataWebView.loadData(locationDataHTMLString, "text/html", "UTF-8");
-
                 }
             }
         });
@@ -450,18 +421,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             String somTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.000000000").format(new java.util.Date(now)).replace(" ", "T") + "Z";
 
             //////// data to be sent to the ///////////
-
-//            String newLine = "\n";
             if (counter % 10 == 1) {
                 buffer = "{\"id\":\"" + now + "\",\"data\":\"" + "" + somTime + "," + location.getProvider() + "," + full_user_id + "," + location.getLongitude() + "," + location.getLatitude() + "," + ((int) location.getFloorIndex() + 1) + "," + location.getAccuracy() + "" + "\"" + "}";
-//
+
                 Log.i ("NOK", "buffer");
             }
         }
     }
-
-
-
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
@@ -502,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         switch (requestCode) {
             case REQUEST_ENABLE_BT:
                 if (resultCode == RESULT_OK) {
-//                    startPositioning();
+                    // startPositioning();
                 } else {
                     //TODO:  User did not enable Bluetooth or an error occurred
                 }
@@ -512,28 +478,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
     }
-
-
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
     }
-// 2021-01-22 14:48:02.536
-//
+
     @Override
     public void onStop() {
         super.onStop();
 
-//        unregisterReceiver(receiver);
+        // unregisterReceiver(receiver);
 
         // When FusedLocationProviderApi has any registered LocationListener on it, positioning engine remains alive.
         // Meaning it will keep bluetooth scanner alive and will drain battery.
         // Therefore, when app is backgrounded, it is recommended to call FusedLocationProviderApi.Api.get().removeLocationUpdates()
         // for each LocationListener you have previously registered. Unless you want to track user's movements even if when app has backgrounded.
-//        LocationServices.getFusedLocationProviderApi().removeLocationUpdates(this);
+        // LocationServices.getFusedLocationProviderApi().removeLocationUpdates(this);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -553,7 +515,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 } else {
                     LocationServices.getFusedLocationProviderApi().requestLocationUpdates(this);
                 }
-
             }
         }
     }
@@ -573,12 +534,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private boolean checkBluetooth() {
-
-//        locationDataWebView.clearHistory();
-//        locationDataWebView.clearCache(true);
-//        locationDataHTMLString ="<html><body><b style=\"color:red\"> Check bluetooth ..  <b></body></html>";
-//        locationDataWebView.loadData(locationDataHTMLString, "text/html", "UTF-8");
-
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         BluetoothAdapter adapter = bluetoothManager.getAdapter();
 
@@ -592,7 +547,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         return true;
     }
-
 
     private boolean checkLocationService() {
         if (!LocationServices.isLocationOn(this)) {
@@ -625,7 +579,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         else
         {
-
             buttonStartLocation.setText(R.string.startLocation);
 
             customHTML = "<html><body style='color:blue'><h2>ESK experiment</h2><b>"+full_user_id+"</b></body></html>";

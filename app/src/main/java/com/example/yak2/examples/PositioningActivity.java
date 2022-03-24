@@ -94,7 +94,7 @@ public class PositioningActivity extends AppCompatActivity implements LocationLi
             }
 
         } else {
-//            info.setText(getString(R.string.ble_not_supported));
+            // info.setText(getString(R.string.ble_not_supported));
         }
     }
 
@@ -126,7 +126,7 @@ public class PositioningActivity extends AppCompatActivity implements LocationLi
                     "Floor:" +
                     newLine +
                     location.getFloorIndex();
-//            info.setText("location updated");
+            // info.setText("location updated");
         }
     }
 
@@ -210,7 +210,6 @@ public class PositioningActivity extends AppCompatActivity implements LocationLi
                     LocationServices.getFusedLocationProviderApi().requestLocationUpdates(this);
                 }
 
-//                info.setText(getString(R.string.waiting_location));
                 Intent startIntent = new Intent(com.example.yak2.examples.PositioningActivity.this, LocationForegroundService.class);
                 startIntent.setAction(Constants.ACTION.START_ACTION);
                 startService(startIntent);

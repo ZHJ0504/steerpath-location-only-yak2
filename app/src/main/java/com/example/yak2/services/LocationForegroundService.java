@@ -74,16 +74,12 @@ public class LocationForegroundService extends Service implements LocationListen
     }
 
     private void sendPostdataToAWS() {
-        for (String s:
-                allreq) {
-
+        for (String s: allreq) {
             sendRequestBody(s);
-
         }
     }
 
     private void sendTheRequest() {
-
         mRequestQueue = Volley.newRequestQueue(this);
         stringRequest = new StringRequest(com.android.volley.Request.Method.POST, "https://gdh6jlmrij.execute-api.ap-southeast-1.amazonaws.com/test/add", new com.android.volley.Response.Listener<String>() {
             @Override
@@ -175,25 +171,26 @@ public class LocationForegroundService extends Service implements LocationListen
         if (BluetoothServices.isBluetoothOn() && LocationServices.isLocationOn(this)) {
             String newLine = "\n";
             Log.i ("NOK", "inside updated");
-//            Log.i ("NOK", String.valueOf(location.getLongitude()));
-//            Log.i ("NOK", String.valueOf(location.getLatitude()));
-//            Log.i ("NOK", String.valueOf(location.getFloorIndex()));
-            if (counter%10 == 0) {
+            // Log.i ("NOK", String.valueOf(location.getLongitude()));
+            // Log.i ("NOK", String.valueOf(location.getLatitude()));
+            // Log.i ("NOK", String.valueOf(location.getFloorIndex()));
+            if (counter % 10 == 0) {
                 String buffer = "{\"id\":\"" + now + "\",\"data\":\"" + "" + somTime + "," + location.getProvider() + "," + userName+userNumber + "," + location.getLongitude() + "," + location.getLatitude() + "," + ((int) location.getFloorIndex() + 1) + "," + location.getAccuracy() + "" + "\"" + "}";
 
                 allreq.add(buffer);
             }
 
-            if (counter%10 == 0)
+            if (counter % 10 == 0)
             {
                 sendPostdataToAWS();
                 allreq.clear();
 
-                Toast.makeText(getApplicationContext(), "data updated", Toast.LENGTH_SHORT).show();
-            }else
+                Toast.makeText(getApplicationContext(), "data updated from background", Toast.LENGTH_SHORT).show();
+            }
+            else
             {
-//                Toast.makeText(getApplicationContext(), "location updated",Toast.LENGTH_SHORT).show();
-//                Toast.makeText(getApplicationContext(), "Long:"+ location.getLongitude() + ", Lat:" + location.getLatitude(),Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "location updated",Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "Long:"+ location.getLongitude() + ", Lat:" + location.getLatitude(),Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -208,10 +205,8 @@ public class LocationForegroundService extends Service implements LocationListen
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private boolean checkBluetooth() {
-
         ScanFilter.Builder builder = new ScanFilter.Builder();
         ScanFilter filter = builder.build();
-
 
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         BluetoothAdapter adapter = bluetoothManager.getAdapter();
@@ -274,7 +269,7 @@ public class LocationForegroundService extends Service implements LocationListen
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         stateService = Constants.STATE_SERVICE.NOT_CONNECTED;
 
-        Toast.makeText(this, "YAK Foreground started ....", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Safety App Foreground started ....", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -282,14 +277,11 @@ public class LocationForegroundService extends Service implements LocationListen
         stateService = Constants.STATE_SERVICE.NOT_CONNECTED;
 
         super.onDestroy();
-//        WL.release();
+        // WL.release();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-
-
         allreq = new ArrayList<String>();
         database_loader = new DBLoader(this);
         tables = database_loader.loadSetups();
@@ -305,7 +297,7 @@ public class LocationForegroundService extends Service implements LocationListen
         // if user starts the service
         switch (intent.getAction()) {
             case Constants.ACTION.START_ACTION:
-//                Log.d(TAG, "Received user starts foreground intent");
+                // Log.d(TAG, "Received user starts foreground intent");
                 startForeground(Constants.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
                 connect();
                 break;
@@ -336,13 +328,11 @@ public class LocationForegroundService extends Service implements LocationListen
                         startPositioning();
                     }
                 }, 2000);
-
     }
 
     private void disconnectFGS() {
-        Toast.makeText(getApplicationContext(), "YAK Foreground Stopped",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Safety App Foreground Stopped",Toast.LENGTH_LONG).show();
     }
-
 
     @SuppressLint("WrongConstant")
     private Notification prepareNotification() {
@@ -361,7 +351,7 @@ public class LocationForegroundService extends Service implements LocationListen
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         // if min sdk goes below honeycomb
-        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+        /* if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         } else {
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -379,10 +369,10 @@ public class LocationForegroundService extends Service implements LocationListen
         // if it is connected
         switch(stateService) {
             case Constants.STATE_SERVICE.NOT_CONNECTED:
-                remoteViews.setTextViewText(R.id.tv_state, "YAK is disconnected");
+                remoteViews.setTextViewText(R.id.tv_state, "Safety app disconnected");
                 break;
             case Constants.STATE_SERVICE.CONNECTED:
-                remoteViews.setTextViewText(R.id.tv_state, "YAK is connected");
+                remoteViews.setTextViewText(R.id.tv_state, "Safety app is running");
                 break;
         }
 

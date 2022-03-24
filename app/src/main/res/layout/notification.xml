@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_orange_light"
+    android:background="@color/sp_white_smoke"
     android:orientation="horizontal"
     android:weightSum="4">
 
@@ -11,11 +11,12 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
-        android:gravity="center">
+        android:gravity="center|left"
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/tv_state"
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="STATES"
             android:textSize="16sp" />
