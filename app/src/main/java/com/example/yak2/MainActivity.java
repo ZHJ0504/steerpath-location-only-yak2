@@ -51,6 +51,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -63,6 +64,7 @@ import com.example.yak2.utils.SettingsHelper;
 import com.example.yak2.utils.model.Setup;
 //import com.squareup.haha.perflib.Main;
 //import com.squareup.haha.perflib.Main;
+import com.google.gson.JsonObject;
 import com.steerpath.sdk.assettracking.AssetGateway;
 import com.steerpath.sdk.location.BluetoothServices;
 import com.steerpath.sdk.location.FusedLocationProviderApi;
@@ -85,7 +87,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import android.provider.Settings.Secure;
 import org.altbeacon.bluetooth.BluetoothMedic;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
@@ -287,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 if (checkLocationPermission())
                 {
+                    Log.i ("NOK", "click the button");
                     expNameString= experimentName.getText().toString();
                     if (buttonStartLocation.getText().equals(getString(R.string.startLocation)) && validateExperimentName(expNameString))
                     {
@@ -391,14 +393,48 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
+    private void sendPostdataToAWS(String bufferString) {
+        sendRequestBody(bufferString);
+    }
+
+    private void sendRequestBody(String body)
+    {
+        try {
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put ("userId", experimentNumber.getText().toString());
+            jsonBody.put("locationData", body);
+//            final String requestBody = jsonBody.toString();
+
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
+                    "http://172.20.10.4:8080/api/location", jsonBody, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i("NOK", String.valueOf(response));
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("NOK", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+            };
+
+            requestQueue.add(jsonRequest);
+        } catch (Exception e) {
+            VolleyLog.wtf(e.toString());
+        }
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         // When bluetooth or location services has just been turned off, there might still be
         // a Location update event coming from the pipeline.
         // These checks has no other purpose but to keep infoText reflecting the state of BL or Location Services.
-        Log.i ("NOK", String.valueOf(location.getLongitude()));
-        Log.i ("NOK", String.valueOf(location.getLatitude()));
-        Log.i ("NOK", String.valueOf(location.getFloorIndex()));
 
         if (BluetoothServices.isBluetoothOn() && LocationServices.isLocationOn(this)) {
             locationDataHTMLString = "<p style=\"font-size:12pt; line-height:0.2em; text-align:left\"><b>Safety App id</b>: " +
@@ -408,7 +444,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     location.getLatitude() + ",<br><b>Lat:</b> " +
                     location.getLongitude() +
                      "<br><b>Accuracy: </b>" +
-                    String.valueOf(location.getAccuracy()) + "</p>";
+                    String.valueOf(location.getAccuracy()) +
+                    "<br><b>Building: </b>" + String.valueOf(location.getBuildingId()) +
+                    "<br><b>Floor: </b>" + String.valueOf(location.getFloorIndex()) +
+                    "</p>";
 
             locationDataWebView.clearCache(true);
             locationDataWebView.clearHistory();
@@ -418,11 +457,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             long now = System.currentTimeMillis();
             String somTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.000000000").format(new java.util.Date(now)).replace(" ", "T") + "Z";
 
-            //////// data to be sent to the ///////////
-            if (counter % 10 == 1) {
-                buffer = "{\"id\":\"" + now + "\",\"data\":\"" + "" + somTime + "," + location.getProvider() + "," + full_user_id + "," + location.getLongitude() + "," + location.getLatitude() + "," + ((int) location.getFloorIndex() + 1) + "," + location.getAccuracy() + "" + "\"" + "}";
+            // send to cloud
+            if (0 == 0) {
+                String userId = experimentNumber.getText().toString();
+                // buffer = "{\"id\":\"" + now + "\",\"data\":\"" + "" + somTime + "," + location.getProvider() + "," + userId + "," +
+                //        location.getLongitude() + "," + location.getLatitude() + "," + ((int) location.getFloorIndex() + 1) + "," +
+                //        location.getAccuracy() + "" + "\"" + "}";
 
-                Log.i ("NOK", "buffer");
+                JSONObject bufferJson = new JSONObject();
+                try {
+                    bufferJson.put("id", now);
+                    bufferJson.put("userId", userId);
+                    bufferJson.put("longitude", location.getLongitude());
+                    bufferJson.put("latitude", location.getLatitude());
+                    bufferJson.put("floorIndex", location.getFloorIndex());
+                    bufferJson.put("buildingId", location.getBuildingId());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i ("NOK", bufferJson.toString());
+                sendPostdataToAWS(bufferJson.toString());
+                counter = 0;
             }
         }
     }

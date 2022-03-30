@@ -32,6 +32,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.yak2.MainActivity;
@@ -44,6 +45,7 @@ import com.steerpath.sdk.location.LocationListener;
 import com.steerpath.sdk.location.LocationRequest;
 import com.steerpath.sdk.location.LocationServices;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -73,34 +75,13 @@ public class LocationForegroundService extends Service implements LocationListen
 
     }
 
-    private void sendPostdataToAWS() {
+    private void sendPostdataToAWSYak() {
         for (String s: allreq) {
-            sendRequestBody(s);
+            sendRequestBodyYak(s);
         }
     }
 
-    private void sendTheRequest() {
-        mRequestQueue = Volley.newRequestQueue(this);
-        stringRequest = new StringRequest(com.android.volley.Request.Method.POST, "https://gdh6jlmrij.execute-api.ap-southeast-1.amazonaws.com/test/add", new com.android.volley.Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-            }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        })
-        {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                return super.getParams();
-            }
-        };
-    }
-
-    private void sendRequestBody(String body)
+    private void sendRequestBodyYak(String body)
     {
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -152,6 +133,43 @@ public class LocationForegroundService extends Service implements LocationListen
         }
     }
 
+    private void sendPostdataToAWS(String bufferString) {
+        sendRequestBody(bufferString);
+    }
+
+    private void sendRequestBody(String body)
+    {
+        try {
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put ("userId", userNumber);
+            jsonBody.put("locationData", body);
+//            final String requestBody = jsonBody.toString();
+
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
+                    "http://172.20.10.4:8080/api/location", jsonBody, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i("NOK", String.valueOf(response));
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("NOK", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+            };
+
+            requestQueue.add(jsonRequest);
+        } catch (Exception e) {
+            VolleyLog.wtf(e.toString());
+        }
+    }
+
     private Toast tt;
     private int counter = 0;
     @Override
@@ -171,9 +189,23 @@ public class LocationForegroundService extends Service implements LocationListen
         if (BluetoothServices.isBluetoothOn() && LocationServices.isLocationOn(this)) {
             String newLine = "\n";
             Log.i ("NOK", "inside updated");
-            // Log.i ("NOK", String.valueOf(location.getLongitude()));
-            // Log.i ("NOK", String.valueOf(location.getLatitude()));
-            // Log.i ("NOK", String.valueOf(location.getFloorIndex()));
+
+            JSONObject bufferJson = new JSONObject();
+            try {
+                bufferJson.put("id", now);
+                bufferJson.put("userId", userNumber);
+                bufferJson.put("longitude", location.getLongitude());
+                bufferJson.put("latitude", location.getLatitude());
+                bufferJson.put("floorIndex", location.getFloorIndex());
+                bufferJson.put("buildingId", location.getBuildingId());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.i ("NOK", bufferJson.toString());
+            sendPostdataToAWS(bufferJson.toString());
+
+            // below is Yak's logic
             if (counter % 10 == 0) {
                 String buffer = "{\"id\":\"" + now + "\",\"data\":\"" + "" + somTime + "," + location.getProvider() + "," + userName+userNumber + "," + location.getLongitude() + "," + location.getLatitude() + "," + ((int) location.getFloorIndex() + 1) + "," + location.getAccuracy() + "" + "\"" + "}";
 
@@ -182,7 +214,7 @@ public class LocationForegroundService extends Service implements LocationListen
 
             if (counter % 10 == 0)
             {
-                sendPostdataToAWS();
+                sendPostdataToAWSYak();
                 allreq.clear();
 
                 Toast.makeText(getApplicationContext(), "data updated from background", Toast.LENGTH_SHORT).show();
