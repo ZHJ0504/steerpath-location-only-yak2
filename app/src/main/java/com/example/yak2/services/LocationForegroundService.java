@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.ScanFilter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -140,10 +141,14 @@ public class LocationForegroundService extends Service implements LocationListen
     private void sendRequestBody(String body)
     {
         try {
+            String currentMode = getModeFromSharedPrefer();
+            currentMode = (currentMode.equals("ON") ? "operator" : "default");
+
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             JSONObject jsonBody = new JSONObject();
             jsonBody.put ("userId", userNumber);
             jsonBody.put("locationData", body);
+            jsonBody.put ("userMode", currentMode);
 //            final String requestBody = jsonBody.toString();
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
@@ -168,6 +173,13 @@ public class LocationForegroundService extends Service implements LocationListen
         } catch (Exception e) {
             VolleyLog.wtf(e.toString());
         }
+    }
+
+    private String getModeFromSharedPrefer() {
+        SharedPreferences existingSharedData = getSharedPreferences("DataSharedPref", MODE_PRIVATE);
+        String modeData = existingSharedData.getString("modeManageBtn", "");
+
+        return modeData;
     }
 
     private Toast tt;

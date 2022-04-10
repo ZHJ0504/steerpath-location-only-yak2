@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     Button buttonStartLocation;
     Button buttonChangeId;
+    Button ModeBtn;
 
     private Intent startIntent2;
 
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             buttonStartLocation = (Button) findViewById(R.id.buttonStartLocation);
             buttonChangeId = findViewById(R.id.buttonChangeId);
+            ModeBtn = findViewById(R.id.modeBtn);
 
             experimentName = (EditText) findViewById(R.id.editTextTextPersonName);
             expNameString = experimentName.getText().toString();
@@ -283,6 +285,31 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             location_permission_enabled = false;
         }
 
+        // set the UI text
+        setOperatorModeText();
+
+        ModeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i ("NOK", "click the mode button");
+                String modeStatus = "ON";
+
+                if (ModeBtn.getText().equals("ON")) {
+                    modeStatus = "ON";
+                } else {
+                    modeStatus = "OFF";
+                }
+
+                SharedPreferences sharedPreferences = getSharedPreferences("DataSharedPref", MODE_PRIVATE);
+                SharedPreferences.Editor dataEditor = sharedPreferences.edit();
+
+                dataEditor.putString("modeManageBtn", modeStatus.toString());
+                dataEditor.commit();
+
+                setOperatorModeText();
+            }
+        });
+
         buttonStartLocation.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -314,6 +341,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 startIntent2 = new Intent(MainActivity.this, LocationForegroundService.class);
                                 startIntent2.setAction(Constants.ACTION.START_ACTION);
                                 startService(startIntent2);
+
+                                // save temporary data
+
+
                             }
 
                         } else {
@@ -393,6 +424,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
+    private void setOperatorModeText() {
+        String currentMode = getModeFromSharedPrefer();
+
+        if (currentMode.equals("ON")) {
+            ModeBtn.setText("OFF");
+        } else {
+            ModeBtn.setText("ON");
+        }
+    }
+
+    private String getModeFromSharedPrefer() {
+        SharedPreferences existingSharedData = getSharedPreferences("DataSharedPref", MODE_PRIVATE);
+        String modeData = existingSharedData.getString("modeManageBtn", "");
+
+        return modeData;
+    }
+
     private void sendPostdataToAWS(String bufferString) {
         sendRequestBody(bufferString);
     }
@@ -400,14 +448,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private void sendRequestBody(String body)
     {
         try {
+            String currentMode = getModeFromSharedPrefer();
+            currentMode = (currentMode.equals("ON") ? "operator" : "default");
+
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             JSONObject jsonBody = new JSONObject();
             jsonBody.put ("userId", experimentNumber.getText().toString());
             jsonBody.put("locationData", body);
+            jsonBody.put ("userMode", currentMode);
 //            final String requestBody = jsonBody.toString();
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
-                    "http://172.20.10.4:8080/api/location", jsonBody, new Response.Listener<JSONObject>() {
+                    "http://172.20.10.4:8080/api/location/", jsonBody, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.i("NOK", String.valueOf(response));
