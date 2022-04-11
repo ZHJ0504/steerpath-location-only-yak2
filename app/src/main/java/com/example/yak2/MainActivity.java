@@ -182,7 +182,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 experimentName.setText(currentKey.getName());
                 experimentNumber.setText(currentKey.getUser_num());
                 full_user_id = currentKey.getName() + currentKey.getUser_num();
-                Toast.makeText(this, full_user_id + " -- 1", Toast.LENGTH_LONG).show();
+
+                Toast.makeText(this, "User Id - " + currentKey.getUser_num() + "", Toast.LENGTH_LONG).show();
 
                 sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 DemoApplication.configureClient(getApplicationContext(), currentKey, sp.getBoolean("monitor", false));
@@ -207,14 +208,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     experimentName.setText(currentKey.getName());
                     experimentNumber.setText(currentKey.getUser_num());
 
-                    full_user_id = currentKey.getName() + currentKey.getUser_num();
+                    full_user_id = currentKey.getUser_num();
                     Toast.makeText(this, full_user_id + " -- 2", Toast.LENGTH_LONG).show();
 
                     webpage.clearCache(true);
                     webpage.clearHistory();
                     locationDataHTMLString += ex.toString() + "<br> p---- >>>";
                     webpage.loadData(locationDataHTMLString, "text/html", "UTF-8");
-                    full_user_id = currentKey.getName() + currentKey.getUser_num();
+                    full_user_id = currentKey.getUser_num();
 
                     sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     DemoApplication.configureClient(getApplicationContext(), currentKey, sp.getBoolean("monitor", false));
@@ -315,10 +316,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 if (checkLocationPermission())
                 {
-                    Log.i ("NOK", "click the button");
+                    Log.i ("NOK", "click start the button");
                     expNameString= experimentName.getText().toString();
-                    if (buttonStartLocation.getText().equals(getString(R.string.startLocation)) && validateExperimentName(expNameString))
+                    experimentNumberString = experimentNumber.getText().toString();
+
+                    Log.i ("NOK", expNameString);
+                    Log.i ("NOK", String.valueOf(validateExperimentName(experimentNumberString)));
+                    if (buttonStartLocation.getText().equals(getString(R.string.startLocation)) && validateExperimentName(experimentNumberString))
                     {
+                        Log.i ("NOK", "after clicked the start button");
                         buttonStartLocation.setText(R.string.stopLocation);
                         buttonChangeId.setEnabled(false);
                         checkBluetooth();
@@ -459,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //            final String requestBody = jsonBody.toString();
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
-                    "http://172.20.10.4:8080/api/location/", jsonBody, new Response.Listener<JSONObject>() {
+                    "https://safety-backend.herokuapp.com/api/location/", jsonBody, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.i("NOK", String.valueOf(response));
@@ -484,6 +490,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.i("NOK", "this is debug");
         // When bluetooth or location services has just been turned off, there might still be
         // a Location update event coming from the pipeline.
         // These checks has no other purpose but to keep infoText reflecting the state of BL or Location Services.
@@ -669,6 +676,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     {
         if(newid.isEmpty())
         {
+            Log.i ("NOK", "Experiemnt id is empty");
             webpage.clearCache(true);
             webpage.clearHistory();
             customHTML = "<html><body style='color:red'> You must add your experiment id and user number first example: enth and 12</body></html>";
@@ -677,6 +685,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         else if(newid.equals("test"))
         {
+            Log.i ("NOK", "Experiemnt is test");
             webpage.clearCache(true);
             webpage.clearHistory();
             customHTML = "<html><body style='color:orange'> Please choose another valid name other than 'test' e.g. enth_22</body></html>";

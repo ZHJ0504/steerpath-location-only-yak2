@@ -152,7 +152,7 @@ public class LocationForegroundService extends Service implements LocationListen
 //            final String requestBody = jsonBody.toString();
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
-                    "http://172.20.10.4:8080/api/location", jsonBody, new Response.Listener<JSONObject>() {
+                    "https://safety-backend.herokuapp.com/api/location", jsonBody, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.i("NOK", String.valueOf(response));

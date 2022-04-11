@@ -127,7 +127,7 @@
             android:layout_marginBottom="129dp"
             android:ems="10"
             android:enabled="false"
-            android:hint="the experiment id e.g. enth_21"
+            android:hint="the user id e.g. abc@gmail.com"
             android:inputType="textPersonName"
             android:minHeight="48dp"
             android:text="@string/testStringNum"
