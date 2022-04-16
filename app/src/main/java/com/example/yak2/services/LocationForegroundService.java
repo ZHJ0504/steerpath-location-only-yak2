@@ -226,10 +226,10 @@ public class LocationForegroundService extends Service implements LocationListen
 
             if (counter % 10 == 0)
             {
-                sendPostdataToAWSYak();
+//                sendPostdataToAWSYak();
                 allreq.clear();
 
-                Toast.makeText(getApplicationContext(), "data updated from background", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Location is updated from background", Toast.LENGTH_SHORT).show();
             }
             else
             {

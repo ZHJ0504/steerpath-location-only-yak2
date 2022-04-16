@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             .accesToken(key)
                             .name(name_)
                             .region(region)
-                            .userNumber("99");
+                            .userNumber("example@gmail.com");
                     dbLoader.addSetup(newSetup);
                     apikeys = dbLoader.loadSetups();
                     currentKey = apikeys.get(0);
@@ -321,8 +321,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     experimentNumberString = experimentNumber.getText().toString();
 
                     Log.i ("NOK", expNameString);
-                    Log.i ("NOK", String.valueOf(validateExperimentName(experimentNumberString)));
-                    if (buttonStartLocation.getText().equals(getString(R.string.startLocation)) && validateExperimentName(experimentNumberString))
+                    Log.i ("NOK", String.valueOf(buttonStartLocation.getText()));
+
+                    if (buttonStartLocation.getText().equals(getString(R.string.startLocation)))
                     {
                         Log.i ("NOK", "after clicked the start button");
                         buttonStartLocation.setText(R.string.stopLocation);
@@ -497,11 +498,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (BluetoothServices.isBluetoothOn() && LocationServices.isLocationOn(this)) {
             locationDataHTMLString = "<p style=\"font-size:12pt; line-height:0.2em; text-align:left\"><b>Safety App id</b>: " +
-                    full_user_id + "</p><hr>" +
+                    experimentNumberString + "</p><hr>" +
                     "<p style=\"font-size:12pt; line-height:0.2em; text-align:left\"><b>Current Location</b>: </p>" +
                     "<p style=\"font-size:10pt\"> <b>Long:</b>" +
-                    location.getLatitude() + ",<br><b>Lat:</b> " +
-                    location.getLongitude() +
+                    location.getLongitude() + ",<br><b>Lat:</b> " +
+                    location.getLatitude() +
                      "<br><b>Accuracy: </b>" +
                     String.valueOf(location.getAccuracy()) +
                     "<br><b>Building: </b>" + String.valueOf(location.getBuildingId()) +
