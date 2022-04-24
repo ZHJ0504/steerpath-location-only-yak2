@@ -151,6 +151,7 @@ public class LocationForegroundService extends Service implements LocationListen
             jsonBody.put ("userMode", currentMode);
 //            final String requestBody = jsonBody.toString();
 
+//            https://safety-backend.herokuapp.com/api
             JsonObjectRequest jsonRequest = new JsonObjectRequest(com.android.volley.Request.Method.POST,
                     "https://safety-backend.herokuapp.com/api/location", jsonBody, new Response.Listener<JSONObject>() {
                 @Override

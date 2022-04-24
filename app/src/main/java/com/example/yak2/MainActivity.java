@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         if (BluetoothServices.isBluetoothOn() && LocationServices.isLocationOn(this)) {
             locationDataHTMLString = "<p style=\"font-size:12pt; line-height:0.2em; text-align:left\"><b>Safety App id</b>: " +
-                    experimentNumberString + "</p><hr>" +
+                    "<br><br><br><br><br><br><br><br>" + experimentNumberString + "</p><hr>" +
                     "<p style=\"font-size:12pt; line-height:0.2em; text-align:left\"><b>Current Location</b>: </p>" +
                     "<p style=\"font-size:10pt\"> <b>Long:</b>" +
                     location.getLongitude() + ",<br><b>Lat:</b> " +
